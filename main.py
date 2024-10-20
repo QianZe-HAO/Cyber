@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
+# dealing with file uploads and deletions
 from utils.upload_files import handle_file_upload
 from utils.delete_all_files import handle_file_delete
+# dealing with URLs
+from utils.process_urls import handle_url
 
 
 # Define the folder for storing uploaded files
@@ -20,6 +23,8 @@ st.sidebar.markdown(
 st.sidebar.markdown("""
 Instructions: Upload Files or URLs $\\rightarrow$ Select Embedding Model $\\rightarrow$ Run Doc Embeddings $\\rightarrow$ Select LLM $\\rightarrow$ Run QA
 """)
+
+
 # ------------ File Upload and Delete Section --------------
 st.sidebar.divider()
 st.sidebar.markdown("### File Upload and Delete")
@@ -35,5 +40,11 @@ if uploaded_files_list:
 else:
     st.sidebar.warning("No files uploaded yet.")
 st.sidebar.divider()
+
 # ------------- Url Upload Section -------------------------
-st.sidebar.markdown("### Append URL")
+url_list = handle_url()
+st.sidebar.divider()
+# -------------- Embedding Model Section -------------------
+st.sidebar.markdown("### Select Model and Run Embeddings")
+if len(uploaded_files_list) == 0 and len(url_list) == 0:
+    st.sidebar.warning("No files or URLs need to be processed.")
