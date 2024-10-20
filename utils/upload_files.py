@@ -11,7 +11,7 @@ def handle_file_upload(save_folder):
     # File uploader widget
     uploaded_file = st.sidebar.file_uploader(
         "File Uploading Part",
-        type=["pdf", "docx", "txt"],
+        type=["pdf", "md"],
         help="Scanned documents are not supported yet!",
     )
 
