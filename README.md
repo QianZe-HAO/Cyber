@@ -3,6 +3,8 @@ The second version of Cyber Hammer. The only way to use it is through web browse
 
 ## System Arch
 
+![](./doc/pic/cyber.svg)
+
 ## Software in Use
 
 * Front-end User Interface: Streamlit
