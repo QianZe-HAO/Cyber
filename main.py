@@ -5,8 +5,9 @@ from utils.upload_files import handle_file_upload
 from utils.delete_all_files import handle_file_delete
 # dealing with URLs
 from utils.process_urls import handle_url
-
-
+import os
+from utils.load_docs import read_file
+from utils.load_docs import read_url
 # Define the folder for storing uploaded files
 save_folder = "./Store"
 
@@ -41,10 +42,40 @@ else:
     st.sidebar.warning("No files uploaded yet.")
 st.sidebar.divider()
 
+
 # ------------- Url Upload Section -------------------------
 url_list = handle_url()
 st.sidebar.divider()
+
+
 # -------------- Embedding Model Section -------------------
+if "file_docs" not in st.session_state:
+    st.session_state["file_docs"] = []
+
+if "url_docs" not in st.session_state:
+    st.session_state["url_docs"] = []
+
+if "docs" not in st.session_state:
+    st.session_state["docs"] = []
+
 st.sidebar.markdown("### Select Model and Run Embeddings")
 if len(uploaded_files_list) == 0 and len(url_list) == 0:
     st.sidebar.warning("No files or URLs need to be processed.")
+else:
+    if st.sidebar.button("Run Embeddings"):
+        for file in uploaded_files_list:
+            file_path = save_folder + "/" + file
+            file_content = read_file(file_path)
+            # print(file_content)
+            st.session_state['file_docs'].append(file_content)
+        # print(st.session_state['file_docs'])
+        for url in url_list:
+            # print(url)
+            url_content = read_url(url)
+            st.session_state['url_docs'].append(url_content)
+        # print(st.session_state['url_docs'])
+        st.session_state["docs"] = st.session_state['file_docs'] + \
+            st.session_state['url_docs']
+        print(st.session_state["docs"])
+
+        # st.write(st.session_state["docs"])
