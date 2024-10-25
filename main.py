@@ -1,3 +1,5 @@
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama.llms import OllamaLLM
 import streamlit as st
 import pandas as pd
 # dealing with file uploads and deletions
@@ -79,3 +81,31 @@ else:
         print(st.session_state["docs"])
 
         # st.write(st.session_state["docs"])
+
+# --------------------- Main Section -----------------------
+
+template = """Question: {question}
+Answer: Let's think step by step."""
+
+prompt = ChatPromptTemplate.from_template(template)
+model = OllamaLLM(model="qwen2.5:0.5b")
+chain = prompt | model
+
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [
+        {"role": "assistant", "content": "How can I help you?"}
+    ]
+
+for msg in st.session_state['messages']:
+    st.chat_message(msg["role"]).write(msg["content"])
+
+if prompt := st.chat_input():
+    st.session_state["messages"].append(
+        {"role": "user", "content": prompt}
+    )
+    st.chat_message("user").write(prompt)
+    response = chain.invoke({"question": prompt})
+    st.session_state["messages"].append(
+        {"role": "assistant", "content": response}
+    )
+    st.chat_message("assistant").write(response)
