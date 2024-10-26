@@ -1,5 +1,4 @@
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
+from langchain_core.messages import HumanMessage
 import streamlit as st
 import pandas as pd
 # dealing with file uploads and deletions
@@ -10,6 +9,11 @@ from utils.process_urls import handle_url
 import os
 from utils.load_docs import read_file
 from utils.load_docs import read_url
+
+
+from model.llm import cyber_chain
+
+
 # Define the folder for storing uploaded files
 save_folder = "./Store"
 
@@ -49,7 +53,6 @@ st.sidebar.divider()
 url_list = handle_url()
 st.sidebar.divider()
 
-
 # -------------- Embedding Model Section -------------------
 if "file_docs" not in st.session_state:
     st.session_state["file_docs"] = []
@@ -78,19 +81,9 @@ else:
         # print(st.session_state['url_docs'])
         st.session_state["docs"] = st.session_state['file_docs'] + \
             st.session_state['url_docs']
-        print(st.session_state["docs"])
 
-        # st.write(st.session_state["docs"])
 
 # --------------------- Main Section -----------------------
-
-template = """Question: {question}
-Answer: Let's think step by step."""
-
-prompt = ChatPromptTemplate.from_template(template)
-model = OllamaLLM(model="qwen2.5:0.5b")
-chain = prompt | model
-
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
         {"role": "assistant", "content": "How can I help you?"}
@@ -99,12 +92,28 @@ if "messages" not in st.session_state:
 for msg in st.session_state['messages']:
     st.chat_message(msg["role"]).write(msg["content"])
 
+if "config" not in st.session_state:
+    st.session_state["config"] = {"configurable": {"thread_id": "abc123"}}
+
 if prompt := st.chat_input():
+    config = st.session_state["config"]
     st.session_state["messages"].append(
         {"role": "user", "content": prompt}
     )
     st.chat_message("user").write(prompt)
-    response = chain.invoke({"question": prompt})
+    # response = chain.invoke({"question": prompt})
+    input_messages = [HumanMessage(prompt)]
+
+    # print(st.session_state["docs"][0])
+
+    if "chain" not in st.session_state:
+        st.session_state["chain"] = cyber_chain(st.session_state["docs"])
+
+    print(st.session_state["chain"])
+
+    res = st.session_state["chain"].invoke(
+        {"messages": input_messages}, config)
+    response = res["messages"][-1].content
     st.session_state["messages"].append(
         {"role": "assistant", "content": response}
     )
