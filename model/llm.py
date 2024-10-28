@@ -2,18 +2,12 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.runnables import RunnablePassthrough
 
-from langchain_ollama import OllamaEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
 
-from .retriever import format_docs
-from .retriever import cyber_retriever
-
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
 
 def cyber_chain(my_docs):
-
     prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -29,15 +23,8 @@ def cyber_chain(my_docs):
     workflow = StateGraph(state_schema=MessagesState)
 
     def call_model(state: MessagesState):
-        if len(my_docs) == 0:
-            chain = prompt | model
-        else:
-            chain = (
-                {"context": cyber_retriever(my_docs)
-                    | format_docs, "question": RunnablePassthrough()}
-                | prompt
-                | model
-            )
+
+        chain = prompt | model
         response = chain.invoke(state)
         return {"messages": response}
 
