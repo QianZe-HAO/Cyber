@@ -8,23 +8,12 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
+from .retriever import format_docs
+from .retriever import cyber_retriever
 
 
 def cyber_chain(my_docs):
-    embeddings = OllamaEmbeddings(
-        model="nomic-embed-text:v1.5",
-    )
-    # Create a text splitter
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, chunk_overlap=200)
-    # Split the documents into smaller chunks
-    splits = text_splitter.split_documents(my_docs)
-    # Create a vectorstore from the documents
-    vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
-    #  Use the vectorstore as a retriever
-    retriever = vectorstore.as_retriever()
+
     prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -44,7 +33,7 @@ def cyber_chain(my_docs):
             chain = prompt | model
         else:
             chain = (
-                {"context": retriever
+                {"context": cyber_retriever(my_docs)
                     | format_docs, "question": RunnablePassthrough()}
                 | prompt
                 | model
