@@ -14,6 +14,10 @@ from utils.load_docs import read_url
 from model.llm import cyber_chain
 
 
+from langchain_ollama import OllamaEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_chroma import Chroma
+
 # Define the folder for storing uploaded files
 save_folder = "./Store"
 
@@ -72,15 +76,26 @@ else:
             file_path = save_folder + "/" + file
             file_content = read_file(file_path)
             # print(file_content)
-            st.session_state['file_docs'].append(file_content)
+            st.session_state['file_docs'] += file_content
         # print(st.session_state['file_docs'])
         for url in url_list:
             # print(url)
             url_content = read_url(url)
-            st.session_state['url_docs'].append(url_content)
+            st.session_state['url_docs'] += url_content
         # print(st.session_state['url_docs'])
         st.session_state["docs"] = st.session_state['file_docs'] + \
             st.session_state['url_docs']
+
+        embeddings = OllamaEmbeddings(
+            model="nomic-embed-text",
+        )
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=100, chunk_overlap=20)
+        splits = text_splitter.split_documents(st.session_state["docs"])
+        print(splits)
+        # vectorstore = Chroma.from_documents(
+        #     documents=splits, embedding=embeddings)
+        # retriever = vectorstore.as_retriever()
 
 
 # --------------------- Main Section -----------------------
