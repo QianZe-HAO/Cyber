@@ -4,10 +4,7 @@ from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
-
-def cyber_chain(my_docs):
+def cyber_chain():
     prompt = ChatPromptTemplate.from_messages(
         [
             (
