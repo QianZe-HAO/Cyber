@@ -19,7 +19,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 
 # Define the folder for storing uploaded files
-save_folder = "./Store"
+save_folder = "./store"
 
 # ----------------- Main Streamlit App ---------------------
 st.set_page_config(page_title="Cyber II",
