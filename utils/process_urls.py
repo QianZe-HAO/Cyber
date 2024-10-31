@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import re
 
+
 def handle_url():
     st.sidebar.markdown("### Append URL")
 
@@ -37,7 +38,8 @@ def handle_url():
 
     # Display the list of URLs
     if st.session_state.url_list:
-        url_df = pd.DataFrame(st.session_state.url_list, columns=["Stored URLs"])
+        url_df = pd.DataFrame(st.session_state.url_list,
+                              columns=["Stored URLs"])
         st.sidebar.dataframe(url_df, width=600, hide_index=True)
     else:
         st.sidebar.warning("No URLs added yet.")
