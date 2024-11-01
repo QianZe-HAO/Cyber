@@ -119,8 +119,6 @@ if prompt := st.chat_input():
     # response = chain.invoke({"question": prompt})
     input_messages = [HumanMessage(prompt)]
 
-    # print(st.session_state["docs"][0])
-
     if "chain" not in st.session_state:
         st.session_state["chain"] = cyber_chain(st.session_state["docs"])
 
