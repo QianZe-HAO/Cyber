@@ -82,7 +82,7 @@ else:
             # print(url)
             url_content = read_url(url)
             st.session_state['url_docs'] += url_content
-        # print(st.session_state['url_docs'])
+
         st.session_state["docs"] = st.session_state['file_docs'] + \
             st.session_state['url_docs']
 
