@@ -75,7 +75,7 @@ else:
         for file in uploaded_files_list:
             file_path = save_folder + "/" + file
             file_content = read_file(file_path)
-            # print(file_content)
+
             st.session_state['file_docs'] += file_content
         # print(st.session_state['file_docs'])
         for url in url_list:
